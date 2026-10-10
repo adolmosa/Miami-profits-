@@ -1,0 +1,202 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#163a5f">
+<meta name="apple-mobile-web-app-title" content="ربحية ميامي">
+<title>حاسبة ربحية مستشفى ميامي</title>
+<style>
+:root{color-scheme:light;--navy:#163a5f;--ink:#17202a;--muted:#667085;--border:#dce3ea;--panel:#f5f8fb;--green:#087443;--red:#b42318;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;color:var(--ink);background:#f3f6f9}
+*{box-sizing:border-box}body{margin:0;background:linear-gradient(#eef3f7,#f8fafc);min-height:100vh}.app{max-width:1050px;margin:auto;padding:14px 12px 36px}.hero{background:var(--navy);color:white;border-radius:20px;padding:22px;margin-bottom:14px}.hero h1{font-size:clamp(23px,4vw,30px);margin:0 0 7px}.hero p{margin:0;line-height:1.7;color:#e4edf6;font-size:14px}.card{background:white;border:1px solid var(--border);border-radius:17px;padding:16px;margin-bottom:13px;box-shadow:0 2px 9px #14283c0a}.card h2{font-size:18px;margin:0 0 13px}.fields{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.field-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.department{border:1px solid #e2e8ee;border-radius:14px;padding:13px;margin-bottom:10px}.department h3{font-size:16px;margin:0 0 10px}.fields label,.field-grid label{display:block;font-size:13px;font-weight:700;line-height:1.5}.fields input,.field-grid input{display:block;width:100%;height:47px;margin-top:5px;border:1px solid #cbd5df;border-radius:11px;padding:8px 10px;background:white;color:var(--ink);font-size:17px;direction:ltr;text-align:right}.fields input:focus,.field-grid input:focus{outline:3px solid #dbeafe;border-color:#2563eb}.hint{color:var(--muted);font-size:12px;line-height:1.8;margin:8px 0 0}.kpis{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.kpi{background:var(--panel);border-radius:13px;padding:13px;min-width:0}.kpi .label{font-size:12px;color:var(--muted);line-height:1.5}.kpi .value{font-size:clamp(18px,3vw,24px);font-weight:850;margin-top:5px;overflow-wrap:anywhere;direction:rtl}.good{color:var(--green)!important;font-weight:800}.bad{color:var(--red)!important;font-weight:800}.note{margin-top:11px;padding:12px;border-radius:12px;background:#f6f8fa;font-size:13px;line-height:1.8}.warning{background:#fff4e5;color:#7a3e00}.table-wrap{overflow-x:auto;max-width:100%}table{border-collapse:collapse;width:100%;min-width:700px;font-size:13px}th,td{padding:10px 8px;border-bottom:1px solid #e7ebef;text-align:right;white-space:nowrap}th{font-weight:800;color:#475467;background:#f8fafc}.total-row{font-weight:850;background:#f8fafc}.button{display:block;width:100%;margin-top:12px;padding:14px;border:0;border-radius:12px;background:var(--navy);color:white;font-size:16px;font-weight:800;cursor:pointer}.button:active{transform:translateY(1px)}.subhead{font-size:15px;margin:14px 0 8px}.formula{direction:rtl}.footer{font-size:12px;color:var(--muted);line-height:1.9}.pill{display:inline-block;padding:3px 8px;border-radius:999px;background:#eef3f7;font-size:11px;color:#475467;margin-inline-start:5px}
+@media(min-width:680px){.app{padding:20px 16px 40px}.kpis{grid-template-columns:repeat(4,minmax(0,1fr))}.fields{grid-template-columns:repeat(4,minmax(0,1fr))}.field-grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media(max-width:360px){.app{padding:8px}.card{padding:12px}.hero{padding:16px}.fields,.field-grid{gap:8px}.fields label,.field-grid label{font-size:12px}}
+</style>
+</head>
+<body>
+<main class="app">
+<header class="hero"><h1>ربحية مستشفى ميامي</h1><p>حاسبة شهرية للإيرادات والتكاليف والأرباح ونقطة التعادل، مع تجربة أثر زيادة الأسعار أو عدد الحالات.</p></header>
+<section class="card"><h2>1. الإعدادات العامة</h2><div class="field-grid">
+<label>إجمالي التكلفة الثابتة الشهرية (جنيه)<input id="fixed" type="number" min="0" step="any" value="800000" inputmode="decimal"></label>
+<label>أيام التشغيل في الشهر<input id="days" type="number" min="1" step="1" value="30" inputmode="numeric"></label>
+</div><p class="hint">أدخل إجمالي التكاليف الثابتة للمستشفى خلال شهر واحد. يجب أن يساوي مجموع نسب توزيع التكلفة الثابتة بين الأقسام والصيدلية 100% حتى تتطابق أرباح الأقسام مع الربح الإجمالي.</p></section>
+<section class="card"><h2>2. بيانات الأقسام</h2>
+<section class="department" aria-label="العمليات والداخلي">
+      <h3>العمليات والداخلي</h3>
+      <div class="fields">
+        <label>الحالات / اليوم<input data-dept="0" data-key="q" type="number" min="0" step="any" value="7" inputmode="decimal"></label>
+        <label>إيراد الحالة (جنيه)<input data-dept="0" data-key="p" type="number" min="0" step="any" value="3000" inputmode="decimal"></label>
+        <label>التكلفة المتغيرة %<input data-dept="0" data-key="v" type="number" min="0" max="100" step="any" value="60" inputmode="decimal"></label>
+        <label>نصيب التكلفة الثابتة %<input data-dept="0" data-key="f" type="number" min="0" max="100" step="any" value="35" inputmode="decimal"></label>
+      </div>
+    </section>
+<section class="department" aria-label="العناية المركزة">
+      <h3>العناية المركزة</h3>
+      <div class="fields">
+        <label>الحالات / اليوم<input data-dept="1" data-key="q" type="number" min="0" step="any" value="4" inputmode="decimal"></label>
+        <label>إيراد الحالة (جنيه)<input data-dept="1" data-key="p" type="number" min="0" step="any" value="0" inputmode="decimal"></label>
+        <label>التكلفة المتغيرة %<input data-dept="1" data-key="v" type="number" min="0" max="100" step="any" value="60" inputmode="decimal"></label>
+        <label>نصيب التكلفة الثابتة %<input data-dept="1" data-key="f" type="number" min="0" max="100" step="any" value="35" inputmode="decimal"></label>
+      </div>
+    </section>
+<section class="department" aria-label="الحضانة">
+      <h3>الحضانة</h3>
+      <div class="fields">
+        <label>الحالات / اليوم<input data-dept="2" data-key="q" type="number" min="0" step="any" value="2" inputmode="decimal"></label>
+        <label>إيراد الحالة (جنيه)<input data-dept="2" data-key="p" type="number" min="0" step="any" value="0" inputmode="decimal"></label>
+        <label>التكلفة المتغيرة %<input data-dept="2" data-key="v" type="number" min="0" max="100" step="any" value="60" inputmode="decimal"></label>
+        <label>نصيب التكلفة الثابتة %<input data-dept="2" data-key="f" type="number" min="0" max="100" step="any" value="10" inputmode="decimal"></label>
+      </div>
+    </section>
+<section class="department" aria-label="العيادات">
+      <h3>العيادات</h3>
+      <div class="fields">
+        <label>الحالات / اليوم<input data-dept="3" data-key="q" type="number" min="0" step="any" value="20" inputmode="decimal"></label>
+        <label>إيراد الحالة (جنيه)<input data-dept="3" data-key="p" type="number" min="0" step="any" value="0" inputmode="decimal"></label>
+        <label>التكلفة المتغيرة %<input data-dept="3" data-key="v" type="number" min="0" max="100" step="any" value="20" inputmode="decimal"></label>
+        <label>نصيب التكلفة الثابتة %<input data-dept="3" data-key="f" type="number" min="0" max="100" step="any" value="5" inputmode="decimal"></label>
+      </div>
+    </section>
+<section class="department" aria-label="المعمل">
+      <h3>المعمل</h3>
+      <div class="fields">
+        <label>الحالات / اليوم<input data-dept="4" data-key="q" type="number" min="0" step="any" value="40" inputmode="decimal"></label>
+        <label>إيراد الحالة (جنيه)<input data-dept="4" data-key="p" type="number" min="0" step="any" value="0" inputmode="decimal"></label>
+        <label>التكلفة المتغيرة %<input data-dept="4" data-key="v" type="number" min="0" max="100" step="any" value="40" inputmode="decimal"></label>
+        <label>نصيب التكلفة الثابتة %<input data-dept="4" data-key="f" type="number" min="0" max="100" step="any" value="5" inputmode="decimal"></label>
+      </div>
+    </section>
+<section class="department" aria-label="الأشعة">
+      <h3>الأشعة</h3>
+      <div class="fields">
+        <label>الحالات / اليوم<input data-dept="5" data-key="q" type="number" min="0" step="any" value="0" inputmode="decimal"></label>
+        <label>إيراد الحالة (جنيه)<input data-dept="5" data-key="p" type="number" min="0" step="any" value="0" inputmode="decimal"></label>
+        <label>التكلفة المتغيرة %<input data-dept="5" data-key="v" type="number" min="0" max="100" step="any" value="30" inputmode="decimal"></label>
+        <label>نصيب التكلفة الثابتة %<input data-dept="5" data-key="f" type="number" min="0" max="100" step="any" value="5" inputmode="decimal"></label>
+      </div>
+    </section>
+<section class="department" aria-label="الطوارئ">
+      <h3>الطوارئ</h3>
+      <div class="fields">
+        <label>الحالات / اليوم<input data-dept="6" data-key="q" type="number" min="0" step="any" value="0" inputmode="decimal"></label>
+        <label>إيراد الحالة (جنيه)<input data-dept="6" data-key="p" type="number" min="0" step="any" value="0" inputmode="decimal"></label>
+        <label>التكلفة المتغيرة %<input data-dept="6" data-key="v" type="number" min="0" max="100" step="any" value="50" inputmode="decimal"></label>
+        <label>نصيب التكلفة الثابتة %<input data-dept="6" data-key="f" type="number" min="0" max="100" step="any" value="2" inputmode="decimal"></label>
+      </div>
+    </section>
+<section class="department"><h3>الصيدلية</h3><div class="fields">
+<label>المبيعات الشهرية (جنيه)<input id="pharmacySales" type="number" min="0" step="any" value="50000" inputmode="decimal"></label>
+<label>هامش الربح الإجمالي %<input id="pharmacyMargin" type="number" min="0" max="100" step="any" value="20" inputmode="decimal"></label>
+<label>نصيب التكلفة الثابتة %<input id="pharmacyFixedShare" type="number" min="0" max="100" step="any" value="3" inputmode="decimal"></label>
+</div><p class="hint">هامش الربح هو النسبة المتبقية من المبيعات بعد تكلفة شراء الأدوية والمستلزمات، وقبل خصم نصيب الصيدلية من المصروفات الثابتة.</p></section>
+</section>
+<section class="card"><h2>3. النتيجة الإجمالية الشهرية</h2><div id="summary" class="kpis" aria-live="polite"></div><div id="allocationMessage" class="note" aria-live="polite"></div></section>
+<section class="card"><h2>4. ربحية كل قسم ونقطة التعادل</h2><p class="hint">نقطة التعادل بالقسم محسوبة على أساس تغطية نصيب القسم المخصص من التكلفة الثابتة. للأقسام الطبية تعرض الحالات المطلوبة شهريًا؛ وللصيدلية تعرض المبيعات الشهرية المطلوبة.</p><div class="table-wrap"><table><thead><tr><th>القسم</th><th>الإيراد الشهري</th><th>هامش المساهمة</th><th>الثابت المخصص</th><th>ربح / خسارة القسم</th><th>نقطة التعادل</th></tr></thead><tbody id="departmentResults"></tbody></table></div><p class="hint">ملاحظة محاسبية: توزيع التكلفة الثابتة وسيلة تحليلية؛ تغيير نسب التوزيع يغيّر ربحية القسم المحسوبة، لكنه لا يغيّر صافي ربح المستشفى الإجمالي.</p></section>
+<section class="card"><h2>5. تجربة سيناريو تحسين الربحية</h2><p class="hint">غيّر النسب لمعرفة الأثر التقديري على الربح الشهري. زيادة الأسعار وعدد الحالات تطبق على الأقسام الطبية، أما الصيدلية فلها نسبة زيادة مبيعات مستقلة. يفترض النموذج ثبات نسب التكلفة المتغيرة وهامش الصيدلية والتكاليف الثابتة.</p>
+<div class="field-grid">
+<label>زيادة أسعار الخدمات الطبية %<input id="priceIncrease" type="number" min="0" max="500" step="any" value="0" inputmode="decimal"></label>
+<label>زيادة عدد الحالات اليومية %<input id="volumeIncrease" type="number" min="0" max="500" step="any" value="0" inputmode="decimal"></label>
+<label>زيادة مبيعات الصيدلية %<input id="pharmacyIncrease" type="number" min="0" max="500" step="any" value="0" inputmode="decimal"></label>
+</div><button class="button" id="calculateButton" type="button">احسب الربحية الآن</button>
+<h3 class="subhead">النتيجة المتوقعة بعد التغيير</h3><div id="scenarioSummary" class="kpis" aria-live="polite"></div><div id="scenarioMessage" class="note" aria-live="polite"></div>
+<div class="table-wrap" style="margin-top:12px"><table><thead><tr><th>القسم</th><th>الربح الحالي</th><th>الربح المتوقع</th><th>الفرق</th></tr></thead><tbody id="scenarioResults"></tbody></table></div>
+</section>
+<section class="card footer"><strong>طريقة الحساب والحدود:</strong><br>• الإيراد الطبي الشهري = الحالات اليومية × إيراد الحالة × أيام التشغيل.<br>• هامش المساهمة = الإيراد ناقص التكاليف المتغيرة.<br>• صافي ربح المستشفى = مجموع هوامش المساهمة − إجمالي التكلفة الثابتة.<br>• نقطة التعادل الإجمالية تقديرية وفق مزيج الإيرادات وهامش المساهمة الحالي؛ وقد تتغير إذا تغير مزيج الأقسام.<br>• النتائج تعتمد على دقة البيانات المدخلة، ولا تشمل أي بنود لم تُدخل في النموذج مثل الضرائب أو التمويل أو الإهلاك المنفصل عن التكلفة الثابتة.</section>
+</main>
+<script>
+'use strict';
+const departments = [
+  {name:'العمليات والداخلي', index:0},
+  {name:'العناية المركزة', index:1},
+  {name:'الحضانة', index:2},
+  {name:'العيادات', index:3},
+  {name:'المعمل', index:4},
+  {name:'الأشعة', index:5},
+  {name:'الطوارئ', index:6}
+];
+const $ = id => document.getElementById(id);
+const readNum = id => { const n = Number($(id).value); return Number.isFinite(n) ? Math.max(0,n) : 0; };
+const readDept = (i,key) => { const el=document.querySelector(`[data-dept="${i}"][data-key="${key}"]`); const n=Number(el.value); return Number.isFinite(n)?Math.max(0,n):0; };
+const pct = (n) => Math.min(100,Math.max(0,n))/100;
+const money = n => Number.isFinite(n) ? Math.round(n).toLocaleString('ar-EG')+' ج' : '—';
+const number = n => Number.isFinite(n) ? Math.ceil(n).toLocaleString('ar-EG') : '—';
+const signedMoney = n => (n>0?'+':n<0?'−':'') + money(Math.abs(n));
+const safeRatio = (a,b) => b>0 ? a/b : null;
+function calculate(){
+  const fixed=readNum('fixed');
+  const days=Math.max(1,Math.floor(readNum('days')||1));
+  const priceRise=readNum('priceIncrease')/100;
+  const volumeRise=readNum('volumeIncrease')/100;
+  const pharmacyRise=readNum('pharmacyIncrease')/100;
+  const rows=[];
+  let totalRevenue=0, totalContribution=0, allocatedShare=0;
+  for(const d of departments){
+    const q=readDept(d.index,'q');
+    const p=readDept(d.index,'p');
+    const variableRate=pct(readDept(d.index,'v'));
+    const fixedShare=pct(readDept(d.index,'f'));
+    const revenue=q*p*days;
+    const contribution=revenue*(1-variableRate);
+    const fixedAssigned=fixed*fixedShare;
+    const profit=contribution-fixedAssigned;
+    const perCaseContribution=p*(1-variableRate);
+    const breakEvenCases=perCaseContribution>0 ? fixedAssigned/perCaseContribution : null;
+    const projectedRevenue=revenue*(1+priceRise)*(1+volumeRise);
+    const projectedContribution=projectedRevenue*(1-variableRate);
+    const projectedProfit=projectedContribution-fixedAssigned;
+    rows.push({name:d.name,revenue,contribution,fixedAssigned,profit,breakEven:breakEvenCases,breakEvenLabel:'حالة/شهر',projectedProfit});
+    totalRevenue+=revenue; totalContribution+=contribution; allocatedShare+=fixedShare;
+  }
+  const pharmacySales=readNum('pharmacySales');
+  const pharmacyMargin=pct(readNum('pharmacyMargin'));
+  const pharmacyFixedShare=pct(readNum('pharmacyFixedShare'));
+  const pharmacyContribution=pharmacySales*pharmacyMargin;
+  const pharmacyFixed=fixed*pharmacyFixedShare;
+  const pharmacyProfit=pharmacyContribution-pharmacyFixed;
+  const pharmacyBreakEven=pharmacyMargin>0 ? pharmacyFixed/pharmacyMargin : null;
+  const projectedPharmacySales=pharmacySales*(1+pharmacyRise);
+  const projectedPharmacyProfit=projectedPharmacySales*pharmacyMargin-pharmacyFixed;
+  rows.push({name:'الصيدلية',revenue:pharmacySales,contribution:pharmacyContribution,fixedAssigned:pharmacyFixed,profit:pharmacyProfit,breakEven:pharmacyBreakEven,breakEvenLabel:'جنيه مبيعات/شهر',projectedProfit:projectedPharmacyProfit});
+  totalRevenue+=pharmacySales; totalContribution+=pharmacyContribution; allocatedShare+=pharmacyFixedShare;
+  const totalProfit=totalContribution-fixed;
+  const cmRatio=totalRevenue>0?totalContribution/totalRevenue:0;
+  const overallBE=cmRatio>0?fixed/cmRatio:null;
+  const allocationPct=allocatedShare*100;
+  const allocationOK=Math.abs(allocatedShare-1)<0.0001;
+  const fmtPct=n=>n.toLocaleString('ar-EG',{maximumFractionDigits:1,minimumFractionDigits:1})+'%';
+  $('summary').innerHTML=[
+    ['إجمالي الإيرادات',money(totalRevenue),''],
+    ['هامش المساهمة',money(totalContribution),''],
+    ['صافي الربح / الخسارة',money(totalProfit),totalProfit>=0?'good':'bad'],
+    ['نقطة التعادل الإجمالية',overallBE===null?'لا يمكن حسابها':money(overallBE),'']
+  ].map(([label,value,cls])=>`<div class="kpi"><div class="label">${label}</div><div class="value ${cls}">${value}</div></div>`).join('');
+  $('allocationMessage').className='note '+(allocationOK?'':'warning');
+  $('allocationMessage').innerHTML=`مجموع نسب توزيع التكلفة الثابتة: <strong>${fmtPct(allocationPct)}</strong>. `+
+    (allocationOK?'التوزيع يساوي 100%، وبالتالي تتطابق أرباح الأقسام حسابيًا مع الربح الإجمالي.':'يجب أن يساوي التوزيع 100%. أرباح الأقسام ستختلف عن إجمالي ربح المستشفى إلى أن تُصحح النسب.')+
+    `<br>الربح الإجمالي يُحسب بطرح إجمالي التكلفة الثابتة مرة واحدة، ولا يعتمد على توزيعها بين الأقسام.`;
+  $('departmentResults').innerHTML=rows.map(r=>`<tr><td>${r.name}</td><td>${money(r.revenue)}</td><td>${money(r.contribution)}</td><td>${money(r.fixedAssigned)}</td><td class="${r.profit>=0?'good':'bad'}">${money(r.profit)}</td><td>${r.breakEven===null?'غير متاح':number(r.breakEven)+' '+r.breakEvenLabel}</td></tr>`).join('')+
+    `<tr class="total-row"><td>الإجمالي</td><td>${money(totalRevenue)}</td><td>${money(totalContribution)}</td><td>${money(fixed)}</td><td class="${totalProfit>=0?'good':'bad'}">${money(totalProfit)}</td><td>${overallBE===null?'غير متاح':money(overallBE)+' مبيعات/شهر'}</td></tr>`;
+  const projectedTotalContribution=rows.reduce((s,r)=>s + r.projectedProfit + r.fixedAssigned,0);
+  const projectedTotalProfit=projectedTotalContribution-fixed;
+  const projectedRevenue=rows.reduce((s,r)=>s+r.revenue,0) + 0; // baseline revenue; projected revenue is computed below for clarity.
+  const projectedMedicalRevenue=departments.reduce((s,d)=>s+readDept(d.index,'q')*readDept(d.index,'p')*days*(1+priceRise)*(1+volumeRise),0);
+  const projectedRevenueTotal=projectedMedicalRevenue+projectedPharmacySales;
+  const change=projectedTotalProfit-totalProfit;
+  $('scenarioSummary').innerHTML=[
+    ['الإيراد المتوقع',money(projectedRevenueTotal),''],
+    ['الربح المتوقع',money(projectedTotalProfit),projectedTotalProfit>=0?'good':'bad'],
+    ['التغير في الربح',signedMoney(change),change>=0?'good':'bad'],
+    ['هامش الربح المتوقع',fmtPct(projectedRevenueTotal>0?projectedTotalProfit/projectedRevenueTotal*100:0),'']
+  ].map(([label,value,cls])=>`<div class="kpi"><div class="label">${label}</div><div class="value ${cls}">${value}</div></div>`).join('');
+  $('scenarioMessage').className='note '+(projectedTotalProfit>=totalProfit?'':'warning');
+  $('scenarioMessage').innerHTML=`مقارنة بالوضع الحالي، يتغير الربح الشهري بمقدار <strong class="${change>=0?'good':'bad'}">${signedMoney(change)}</strong>. `+
+    `الحساب يفترض أن نسبة التكلفة المتغيرة لكل قسم لا تتغير مع السعر أو حجم النشاط، وأن التكلفة الثابتة تظل عند ${money(fixed)} شهريًا.`;
+  $('scenarioResults').innerHTML=rows.map(r=>{const delta=r.projectedProfit-r.profit;return `<tr><td>${r.name}</td><td class="${r.profit>=0?'good':'bad'}">${money(r.profit)}</td><td class="${r.projectedProfit>=0?'good':'bad'}">${money(r.projectedProfit)}</td><td class="${delta>=0?'good':'bad'}">${signedMoney(delta)}</td></tr>`}).join('')+
+    `<tr class="total-row"><td>الإجمالي</td><td class="${totalProfit>=0?'good':'bad'}">${money(totalProfit)}</td><td class="${projectedTotalProfit>=0?'good':'bad'}">${money(projectedTotalProfit)}</td><td class="${change>=0?'good':'bad'}">${signedMoney(change)}</td></tr>`;
+}
+document.addEventListener('input',e=>{if(e.target.matches('input'))calculate();});
+$('calculateButton').addEventListener('click',calculate);
+calculate();
+</script>
+</body>
+</html>
